@@ -1,0 +1,78 @@
+    <style>
+    body{
+        background: url(https://cdn.wallpapersafari.com/61/49/NFSarR.jpg);
+        background-repeat:no-repeat;
+        background-size:cover;
+        font-size: 70px;
+
+        color: white;
+    }
+
+    #temperatur,
+    #is_day,
+    #precipitation,
+    #windspeed{
+        color: transparent;
+        font-family: arial;
+        -webkit-text-stroke-color:greenyellow;
+        -webkit-text-stroke-width: 5px;
+        font-weight: bold;
+        transition: color 0.3213432s ease-out,
+                    font-size 0.3s ease-out;
+
+        &:hover{
+            font-size: 1.2em;
+        color:rgb(77, 8, 156)
+        }
+    }
+
+    </style>
+
+    <body>
+        <span> 
+            Temperature is
+        </span>
+        <span id = "temperatur">
+
+        </span>
+        <br>
+        <span>
+            Wind Speed is  
+        </span>
+        <span id = "windspeed">
+        </span>
+        <br>
+        is it day?
+        <span id="is_day"></span>
+        <br>
+        Precipitation
+        <span id="precipitation"></span>
+
+    </body>
+
+    <script>
+        let geolink = `https://geocoding-api.open-meteo.com/v1/search?name=${prompt("please type in the location you want your weather for")}&count=1&language=en&format=json`
+        
+        fetch(geolink)
+            .then(response => response.json())
+            .then(data => {
+                let lat = data["results"][0]["latitude"]
+                let lon = data["results"][0]["longitude"]
+                let link = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,precipitation,is_day,weather_code&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`
+            
+                fetch(link)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data["current"])
+                        windspeed.innerText = data["current"]["wind_speed_10m"] + " km/h";
+                        temperatur.innerText = data["current"]["temperature_2m"] * 9/5 + 32 + "°F";
+                        is_day.innerText = data["current"]["is_day"] 
+                        precipitation.innerText = data["current"]["precipitation"]
+                    })
+                    .catch(error => console.error('Error fetching weather data:', error));
+            })
+            .catch(error => console.error('Error fetching weather data:', error));
+
+
+
+    </script>
